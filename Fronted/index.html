@@ -1,0 +1,310 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FLAGE — Mini App</title>
+  <style>
+    :root{
+      --bg:#070707; --card:#111; --muted:#9a9a9a; --accent:#f0c419; --glass: rgba(255,255,255,0.03);
+      --radius:16px; --pad:14px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#050505,#0d0d0d);color:#fff}
+    .app{max-width:460px;margin:0 auto;padding:16px;}
+    .topbar{display:flex;align-items:center;gap:12px;padding:8px 4px}
+    .flag-badge{width:64px;height:64px;border-radius:12px;background:#000;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.6);}
+    .title-block{flex:1}
+    .title-block .name{font-weight:700;font-size:18px}
+    .title-block .subtitle{font-size:12px;color:var(--muted);margin-top:4px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:18px;padding:16px;margin-top:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    .flag-large{display:flex;align-items:center;justify-content:center;height:140px;border-radius:12px;background:linear-gradient(180deg,#000,#111);}
+    .balance{margin-top:12px;text-align:center}
+    .balance .amount{font-size:26px;font-weight:700}
+    .balance .ticker{font-size:12px;color:var(--muted);margin-top:6px}
+    .connect-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:14px}
+    .connect-btn{background:linear-gradient(90deg,var(--accent),#e6b31a);padding:12px 16px;border-radius:12px;border:0;font-weight:700;color:#000;cursor:pointer}
+    .status{color:var(--muted);font-size:13px;margin-top:8px;text-align:center}
+    .tasks{margin-top:18px}
+    .task-card{background:var(--glass);padding:12px;border-radius:12px;margin-bottom:12px;}
+    .task-card h4{margin:0 0 6px 0;font-size:14px}
+    .task-card p{margin:0;font-size:13px;color:var(--muted)}
+    .task-card button{margin-top:8px;padding:8px 12px;border:0;border-radius:10px;background:var(--accent);color:#000;font-weight:700;cursor:pointer}
+    .nav{display:flex;gap:10px;justify-content:space-around;margin-top:18px;padding:10px;background:transparent}
+    .nav button{background:var(--glass);border-radius:14px;padding:8px 10px;border:0;color:#fff}
+    .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .small{font-size:12px;color:var(--muted)}
+    .leaderboard{margin-top:12px}
+    .leader-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+    .medal{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .gold{background:linear-gradient(90deg,#ffd700,#f0c419);color:#000}
+    .silver{background:linear-gradient(90deg,#c0c0c0,#b0b0b0);color:#000}
+    .bronze{background:linear-gradient(90deg,#cd7f32,#b86b2a);color:#000}
+    .muted{color:var(--muted)}
+    a { color: inherit; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="flag-badge" aria-hidden>
+        <svg viewBox="0 0 64 64" width="44" height="44" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#000" rx="8"/><path d="M8 12c6-6 20-6 28 0 8 6 18 2 18 14v16c-6 8-20 12-40 8V12z" fill="#fff"/></svg>
+      </div>
+
+      <div class="title-block">
+        <div class="name">FLAGE</div>
+        <div class="subtitle">mini app</div>
+      </div>
+
+      <div style="text-align:right">
+        <div class="small">● Online</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flag-large">
+        <svg viewBox="0 0 160 160" width="110" height="110" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="160" rx="16" fill="#000"/><g transform="translate(20,18)"><path d="M10 8c12-12 38-12 54 0 16 12 36 4 36 30v34c-12 16-38 24-76 16V8z" fill="#fff"/></g></svg>
+      </div>
+
+      <div class="balance">
+        <div class="amount" id="balanceAmount">0</div>
+        <div class="ticker">FLAG</div>
+      </div>
+
+      <div class="connect-row">
+        <button class="connect-btn" id="connectBtn">Connect wallet</button>
+      </div>
+
+      <div class="status" id="statusText">Not connected</div>
+    </div>
+
+    <div class="tasks">
+      <h3>Daily Check-in</h3>
+      <div class="task-card">
+        <h4 id="checkinTitle">Day 1 Reward</h4>
+        <p id="checkinDesc">Claim your daily check-in reward</p>
+        <button id="checkinBtn">Claim</button>
+      </div>
+
+      <h3>Complete Tasks & Earn</h3>
+
+      <div class="task-card">
+        <div class="row">
+          <div>
+            <h4>Join our Telegram Channel</h4>
+            <p class="muted">+100 FLAG</p>
+          </div>
+          <div style="text-align:right">
+            <a id="joinChannel" target="_blank" href="#"><button>Join</button></a>
+            <div style="height:8px"></div>
+            <button id="markJoin">Mark as done</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card">
+        <div class="row">
+          <div>
+            <h4>Like our Post</h4>
+            <p class="muted">+50 FLAG</p>
+          </div>
+          <div style="text-align:right">
+            <button id="markLike">Mark as done</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav">
+      <button id="navHome">Home</button>
+      <button id="navMine">Mine</button>
+      <button id="navFriends">Friends</button>
+      <button id="navLeaders">Leaders</button>
+    </div>
+
+    <div id="friendsSection" style="display:none;margin-top:12px">
+      <div class="task-card">
+        <h4>Invite friends & earn</h4>
+        <p class="muted">You get 30 FLAG for each friend who joins with your referral. Plus, you earn 100 FLAG each time your friend reaches another 1000 FLAG.</p>
+        <div style="margin-top:10px">
+          <div class="muted">Your referral link</div>
+          <div style="margin-top:6px;"><code id="refLink" style="background:#111;padding:8px;border-radius:8px;display:block"></code></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="leadersSection" style="display:none;margin-top:12px">
+      <h3>Leaderboard</h3>
+      <div class="leaderboard" id="leaderboard"></div>
+    </div>
+
+  </div>
+
+<script>
+  // ---------- CONFIG ----------
+  const defaultBackend = ''; // change if needed
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('user_id') || null;
+  let BACKEND_URL = params.get('backend') || defaultBackend;
+  const BOT_USERNAME = params.get('bot') || 'YOUR_BOT_USERNAME';
+
+  // Elements
+  const balanceAmount = document.getElementById('balanceAmount');
+  const connectBtn = document.getElementById('connectBtn');
+  const statusText = document.getElementById('statusText');
+  const checkinBtn = document.getElementById('checkinBtn');
+  const checkinTitle = document.getElementById('checkinTitle');
+  const checkinDesc = document.getElementById('checkinDesc');
+  const joinChannel = document.getElementById('joinChannel');
+  const markJoin = document.getElementById('markJoin');
+  const markLike = document.getElementById('markLike');
+  const refLink = document.getElementById('refLink');
+  const navFriends = document.getElementById('navFriends');
+  const navLeaders = document.getElementById('navLeaders');
+  const friendsSection = document.getElementById('friendsSection');
+  const leadersSection = document.getElementById('leadersSection');
+  const leaderboardEl = document.getElementById('leaderboard');
+
+  let connected = false;
+  let walletAddress = null;
+
+  function showStatus(msg){ statusText.innerText = msg; }
+
+  function updateReferral(){
+    if (!userId){
+      refLink.innerText = "Open this WebApp from Telegram (bot will pass your user_id).";
+      return;
+    }
+    const link = `https://t.me/${BOT_USERNAME}?start=${userId}`;
+    refLink.innerText = link;
+  }
+  updateReferral();
+
+  async function api(path, method='GET', body=null){
+    if (!BACKEND_URL) {
+      alert('Backend URL not set. Add ?backend=https://your-backend.example to the WebApp URL or edit the file.');
+      throw 'No backend';
+    }
+    const url = `${BACKEND_URL}${path}${method==='GET' && body ? ('?' + new URLSearchParams(body)) : ''}`;
+    const opts = { method, headers: {'Content-Type':'application/json'} };
+    if (body && method !== 'GET') opts.body = JSON.stringify(body);
+    const res = await fetch(url, opts);
+    return res.json();
+  }
+
+  async function loadBalance(){
+    if (!userId || !BACKEND_URL) return;
+    try{
+      const data = await api(`/api/balance?user_id=${userId}`);
+      if (data && data.ok){
+        balanceAmount.innerText = data.balance.toLocaleString();
+      }
+    }catch(e){ console.warn(e); }
+  }
+  loadBalance();
+
+  connectBtn.addEventListener('click', async ()=>{
+    if (!userId){
+      alert('Open this WebApp through the Telegram bot so your user id is known.');
+      return;
+    }
+    if (!connected){
+      walletAddress = '0:' + Math.random().toString(36).slice(2,10);
+      connected = true;
+      connectBtn.innerText = 'Disconnect';
+      showStatus(`Connected: ${walletAddress}`);
+      if (BACKEND_URL) {
+        try {
+          await api('/api/connect_wallet', 'POST', {user_id: userId, wallet: walletAddress});
+          await loadBalance();
+        } catch(e) { console.warn(e); }
+      }
+    } else {
+      connected = false;
+      walletAddress = null;
+      connectBtn.innerText = 'Connect wallet';
+      showStatus('Not connected');
+    }
+  });
+
+  checkinBtn.addEventListener('click', async ()=>{
+    if (!userId) { alert('Open via bot.'); return; }
+    try{
+      const data = await api('/api/checkin', 'POST', {user_id: userId});
+      if (data && data.ok){
+        balanceAmount.innerText = data.new_balance.toLocaleString();
+        checkinTitle.innerText = `Day ${data.next_day} Reward`;
+        checkinDesc.innerText = `Claim ${data.next_reward} FLAG reward`;
+        checkinBtn.disabled = true;
+        checkinBtn.innerText = 'Claimed';
+        setTimeout(()=>{ checkinBtn.disabled = false; checkinBtn.innerText = 'Claim'; }, 1500);
+      } else {
+        alert(data.error || 'Error');
+      }
+    }catch(e){ console.warn(e); alert('API error'); }
+  });
+
+  joinChannel.href = 'https://t.me/your_channel_here';
+  markJoin.addEventListener('click', async ()=>{
+    if (!userId) { alert('Open via bot.'); return; }
+    try{
+      const data = await api('/api/complete_task', 'POST', {user_id: userId, task: 'join_channel', amount: 100});
+      if (data && data.ok){
+        balanceAmount.innerText = data.new_balance.toLocaleString();
+        alert('Task marked done — awarded!');
+      }
+    }catch(e){ console.warn(e); }
+  });
+
+  markLike.addEventListener('click', async ()=>{
+    if (!userId) { alert('Open via bot.'); return; }
+    try{
+      const data = await api('/api/complete_task', 'POST', {user_id: userId, task: 'like_post', amount: 50});
+      if (data && data.ok){
+        balanceAmount.innerText = data.new_balance.toLocaleString();
+        alert('Task marked done — awarded!');
+      }
+    }catch(e){ console.warn(e); }
+  });
+
+  navFriends.addEventListener('click', ()=>{ friendsSection.style.display='block'; leadersSection.style.display='none'; updateReferral(); });
+  navLeaders.addEventListener('click', async ()=>{
+    friendsSection.style.display='none'; leadersSection.style.display='block';
+    leaderboardEl.innerHTML = 'Loading...';
+    try{
+      const data = await api('/api/leaderboard?limit=50');
+      if (data && data.ok){
+        const list = data.leaders;
+        leaderboardEl.innerHTML = '';
+        list.forEach((u,i)=>{
+          const div = document.createElement('div'); div.className='leader-item';
+          const pos = document.createElement('div'); pos.style.minWidth='44px';
+          if (i===0) pos.innerHTML = `<div class="medal gold">1</div>`;
+          else if (i===1) pos.innerHTML = `<div class="medal silver">2</div>`;
+          else if (i===2) pos.innerHTML = `<div class="medal bronze">3</div>`;
+          else pos.innerHTML = `<div class="muted">${i+1}</div>`;
+          const info = document.createElement('div');
+          info.innerHTML = `<div style="font-weight:700">${u.username || 'User ' + u.user_id}</div><div class="muted">${u.balance.toLocaleString()} FLAG</div>`;
+          div.appendChild(pos); div.appendChild(info);
+          leaderboardEl.appendChild(div);
+        });
+      } else { leaderboardEl.innerHTML = 'No data'; }
+    }catch(e){ leaderboardEl.innerHTML = 'Error'; console.warn(e); }
+  });
+
+  async function loadCheckinInfo(){
+    if (!userId || !BACKEND_URL) return;
+    try{
+      const data = await api(`/api/checkin_info?user_id=${userId}`);
+      if (data && data.ok){
+        checkinTitle.innerText = `Day ${data.day} Reward`;
+        checkinDesc.innerText = `Claim ${data.reward} FLAG`;
+      }
+    }catch(e){ console.warn(e); }
+  }
+  loadCheckinInfo();
+</script>
+</body>
+</html>
